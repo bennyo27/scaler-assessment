@@ -14,10 +14,11 @@ import { Event } from '../page';
 interface CalendarProps {
   currentDate: Date;
   onDayClick: (day: Date) => void;
+  onEventClick: (event: Event) => void;
   events: Event[];
 }
 
-const Calendar: React.FC<CalendarProps> = ({ currentDate, onDayClick, events }) => {
+const Calendar: React.FC<CalendarProps> = ({ currentDate, onDayClick, onEventClick, events }) => {
   const firstDayOfMonth = startOfMonth(currentDate);
   const lastDayOfMonth = endOfMonth(currentDate);
 
@@ -55,7 +56,14 @@ const Calendar: React.FC<CalendarProps> = ({ currentDate, onDayClick, events }) 
               {events
                 .filter((event) => format(new Date(event.startTime), 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd'))
                 .map((event) => (
-                  <div key={event.id} className="p-1 text-xs text-white bg-blue-500 rounded-md">
+                  <div
+                    key={event.id}
+                    className="p-1 text-xs text-white bg-blue-500 rounded-md cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEventClick(event);
+                    }}
+                  >
                     {event.title}
                   </div>
                 ))}

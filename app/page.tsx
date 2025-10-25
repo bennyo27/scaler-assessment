@@ -22,6 +22,7 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [view, setView] = useState<View>('month');
 
   const fetchEvents = async () => {
@@ -51,12 +52,26 @@ export default function Home() {
     setIsModalOpen(true);
   };
 
+  const handleEventClick = (event: Event) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedDate(null);
+    setSelectedEvent(null);
   };
 
   const handleEventAdded = () => {
+    fetchEvents();
+  };
+
+  const handleEventUpdated = () => {
+    fetchEvents();
+  };
+
+  const handleEventDeleted = () => {
     fetchEvents();
   };
 
@@ -70,10 +85,18 @@ export default function Home() {
         view={view}
         onViewChange={setView}
       />
-      {view === 'month' && <Calendar currentDate={currentDate} onDayClick={handleDayClick} events={events} />}
-      {view === 'week' && <WeekCalendar currentDate={currentDate} events={events} />}
-      {view === 'day' && <DayCalendar currentDate={currentDate} events={events} />}
-      <EventModal isOpen={isModalOpen} onClose={handleCloseModal} onEventAdded={handleEventAdded} selectedDate={selectedDate} />
+      {view === 'month' && <Calendar currentDate={currentDate} onDayClick={handleDayClick} onEventClick={handleEventClick} events={events} />}
+      {view === 'week' && <WeekCalendar currentDate={currentDate} events={events} onDayClick={handleDayClick} onEventClick={handleEventClick} />}
+      {view === 'day' && <DayCalendar currentDate={currentDate} events={events} onDayClick={handleDayClick} onEventClick={handleEventClick} />}
+      <EventModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onEventAdded={handleEventAdded}
+        onEventUpdated={handleEventUpdated}
+        onEventDeleted={handleEventDeleted}
+        selectedDate={selectedDate}
+        selectedEvent={selectedEvent}
+      />
     </div>
   );
 }

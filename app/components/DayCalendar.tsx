@@ -1,13 +1,15 @@
-import { format, getHours, getMinutes } from 'date-fns';
+import { format, getHours, getMinutes, setHours } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 import { Event } from '../page';
 
 interface DayCalendarProps {
   currentDate: Date;
   events: Event[];
+  onDayClick: (day: Date) => void;
+  onEventClick: (event: Event) => void;
 }
 
-const DayCalendar: React.FC<DayCalendarProps> = ({ currentDate, events }) => {
+const DayCalendar: React.FC<DayCalendarProps> = ({ currentDate, events, onDayClick, onEventClick }) => {
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -23,7 +25,8 @@ const DayCalendar: React.FC<DayCalendarProps> = ({ currentDate, events }) => {
   return (
     <div className="flex flex-col flex-grow">
       <div className="flex items-center justify-center py-2 bg-gray-200">
-        <div className="text-2xl font-bold">{format(currentDate, 'EEE, MMM d')}</div>
+        <div className="text-2xl font-bold">{format(currentDate, 'EEE, MMM d')}
+        </div>
       </div>
       <div className="flex flex-grow">
         <div className="w-16 text-center bg-gray-100">
@@ -38,6 +41,13 @@ const DayCalendar: React.FC<DayCalendarProps> = ({ currentDate, events }) => {
           >
             <div className="absolute w-2 h-2 -ml-1 bg-red-500 rounded-full -left-1"></div>
           </div>
+          {hours.map((hour) => (
+            <div
+              key={hour}
+              className="h-12 border-b cursor-pointer"
+              onClick={() => onDayClick(setHours(currentDate, hour))}
+            ></div>
+          ))}
           {events
             .filter((event) => format(new Date(event.startTime), 'yyyy-MM-dd') === format(currentDate, 'yyyy-MM-dd'))
             .map((event) => {
@@ -48,8 +58,12 @@ const DayCalendar: React.FC<DayCalendarProps> = ({ currentDate, events }) => {
               return (
                 <div
                   key={event.id}
-                  className="absolute left-0 right-0 p-1 mx-1 text-xs text-white bg-blue-500 rounded-md"
+                  className="absolute left-0 right-0 p-1 mx-1 text-xs text-white bg-blue-500 rounded-md cursor-pointer"
                   style={{ top: `${eventTop}rem`, height: `${height}rem` }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEventClick(event);
+                  }}
                 >
                   {event.title}
                 </div>
