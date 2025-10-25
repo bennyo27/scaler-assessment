@@ -1,11 +1,14 @@
 import React from 'react';
 import {
+  areIntervalsOverlapping,
   eachDayOfInterval,
+  endOfDay,
   endOfMonth,
   endOfWeek,
   format,
   isSameMonth,
   isToday,
+  startOfDay,
   startOfMonth,
   startOfWeek,
 } from 'date-fns';
@@ -54,7 +57,12 @@ const Calendar: React.FC<CalendarProps> = ({ currentDate, onDayClick, onEventCli
             </div>
             <div className="flex-grow overflow-y-auto">
               {events
-                .filter((event) => format(new Date(event.startTime), 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd'))
+                .filter((event) =>
+                  areIntervalsOverlapping(
+                    { start: startOfDay(day), end: endOfDay(day) },
+                    { start: new Date(event.startTime), end: new Date(event.endTime) }
+                  )
+                )
                 .map((event) => (
                   <div
                     key={event.id}

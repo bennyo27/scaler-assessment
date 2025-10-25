@@ -1,4 +1,4 @@
-import { eachDayOfInterval, endOfWeek, format, startOfWeek } from 'date-fns';
+import { areIntervalsOverlapping, eachDayOfInterval, endOfDay, endOfWeek, format, startOfDay, startOfWeek } from 'date-fns';
 import React from 'react';
 import { Event } from '../page';
 
@@ -33,7 +33,12 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({ currentDate, events, onDayC
           <div key={day.toString()} className="border-r bg-white cursor-pointer" onClick={() => onDayClick(day)}>
             <div className="flex-grow overflow-y-auto">
               {events
-                .filter((event) => format(new Date(event.startTime), 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd'))
+                .filter((event) =>
+                  areIntervalsOverlapping(
+                    { start: startOfDay(day), end: endOfDay(day) },
+                    { start: new Date(event.startTime), end: new Date(event.endTime) }
+                  )
+                )
                 .map((event) => (
                   <div
                     key={event.id}
