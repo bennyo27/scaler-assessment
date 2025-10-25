@@ -75,11 +75,10 @@ const EventModal: React.FC<EventModalProps> = ({
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-1/3 bg-white rounded-lg shadow-lg">
+    <div className={`fixed inset-0 z-10 flex items-center justify-center transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose}></div>
+      <div className={`w-1/3 bg-white rounded-lg shadow-lg transform transition-all ${isOpen ? 'scale-100' : 'scale-95'}`}>
         <div className="p-4 border-b">
           <h2 className="text-lg font-semibold">{selectedEvent ? 'Edit Event' : 'Create Event'}</h2>
         </div>

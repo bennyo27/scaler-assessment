@@ -19,7 +19,7 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({ currentDate, events, onDayC
   });
 
   return (
-    <div className="flex flex-col flex-grow">
+    <div className="flex flex-col flex-grow h-screen">
       <div className="grid grid-cols-7 text-center bg-gray-200">
         {daysInWeek.map((day) => (
           <div key={day.toString()} className="py-2 border-r">

@@ -24,11 +24,14 @@ export default function Home() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [view, setView] = useState<View>('month');
+  const [loading, setLoading] = useState(true);
 
   const fetchEvents = async () => {
+    setLoading(true);
     const response = await fetch('/api/events');
     const data = await response.json();
     setEvents(data);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -85,9 +88,17 @@ export default function Home() {
         view={view}
         onViewChange={setView}
       />
-      {view === 'month' && <Calendar currentDate={currentDate} onDayClick={handleDayClick} onEventClick={handleEventClick} events={events} />}
-      {view === 'week' && <WeekCalendar currentDate={currentDate} events={events} onDayClick={handleDayClick} onEventClick={handleEventClick} />}
-      {view === 'day' && <DayCalendar currentDate={currentDate} events={events} onDayClick={handleDayClick} onEventClick={handleEventClick} />}
+      {loading ? (
+        <div className="flex items-center justify-center flex-grow">
+          <div className="w-16 h-16 border-4 border-blue-500 border-solid rounded-full border-t-transparent animate-spin"></div>
+        </div>
+      ) : (
+        <div className="animate-fadeIn">
+          {view === 'month' && <Calendar currentDate={currentDate} onDayClick={handleDayClick} onEventClick={handleEventClick} events={events} />}
+          {view === 'week' && <WeekCalendar currentDate={currentDate} events={events} onDayClick={handleDayClick} onEventClick={handleEventClick} />}
+          {view === 'day' && <DayCalendar currentDate={currentDate} events={events} onDayClick={handleDayClick} onEventClick={handleEventClick} />}
+        </div>
+      )}
       <EventModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
