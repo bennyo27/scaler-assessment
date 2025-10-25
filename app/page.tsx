@@ -1,7 +1,12 @@
 'use client';
 
+import { add, sub } from 'date-fns';
 import { useEffect, useState } from 'react';
 import Calendar from './components/Calendar';
+import DayCalendar from './components/DayCalendar';
+import EventModal from './components/EventModal';
+import Header from './components/Header';
+import WeekCalendar from './components/WeekCalendar';
 
 export interface Event {
   id: number;
@@ -29,15 +34,47 @@ export default function Home() {
     fetchEvents();
   }, []);
 
+  const handleNextMonth = () => {
+    setCurrentDate(add(currentDate, { months: 1 }));
+  };
+
+  const handlePrevMonth = () => {
+    setCurrentDate(sub(currentDate, { months: 1 }));
+  };
+
+  const handleToday = () => {
+    setCurrentDate(new Date());
+  };
+
   const handleDayClick = (day: Date) => {
     setSelectedDate(day);
     setIsModalOpen(true);
   };
 
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedDate(null);
+  };
+
+  const handleEventAdded = () => {
+    fetchEvents();
+  };
 
   return (
     <div className="flex flex-col h-screen">
+      <Header
+        currentDate={currentDate}
+        onNextMonth={handleNextMonth}
+        onPrevMonth={handlePrevMonth}
+        onToday={handleToday}
+        view={view}
+        onViewChange={setView}
+      />
       {view === 'month' && <Calendar currentDate={currentDate} onDayClick={handleDayClick} events={events} />}
+      {view === 'week' && <WeekCalendar currentDate={currentDate} events={events} />}
+      {view === 'day' && <DayCalendar currentDate={currentDate} events={events} />}
+      <EventModal isOpen={isModalOpen} onClose={handleCloseModal} onEventAdded={handleEventAdded} selectedDate={selectedDate} />
     </div>
   );
 }
+
